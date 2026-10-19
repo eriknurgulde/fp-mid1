@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Functional Programming in Python – Study Hub</title>
+<style>
+:root{--bg:#f7f8fa;--fg:#1c2030;--mut:#5d6579;--card:#fff;--bd:#dde1ea;--ac:#2563eb;--acb:#e3ebff;--ok:#16794c;--okb:#dcf5e8;--no:#b42318;--nob:#fde4e1;--cd:#12161f;--cf:#e8ecf5;
+padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);box-sizing:border-box}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0f1219;--fg:#e8ebf3;--mut:#9aa3b8;--card:#181d29;--bd:#2a3144;--ac:#7aa2ff;--acb:#22305a;--ok:#5fd59b;--okb:#13392a;--no:#ff8a80;--nob:#432220;--cd:#0a0d13;--cf:#dbe3f5}}
+:root[data-theme=dark]{--bg:#0f1219;--fg:#e8ebf3;--mut:#9aa3b8;--card:#181d29;--bd:#2a3144;--ac:#7aa2ff;--acb:#22305a;--ok:#5fd59b;--okb:#13392a;--no:#ff8a80;--nob:#432220;--cd:#0a0d13;--cf:#dbe3f5}
+*{box-sizing:border-box}html{scroll-padding-top:60px}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{padding:20px 16px 8px;max-width:900px;margin:auto}
+h1{font-size:1.4rem;margin:0}header p{margin:2px 0 0;color:var(--mut);font-size:.9rem}
+nav{position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5;max-width:900px;margin:auto;padding:8px 16px;border-bottom:1px solid var(--bd)}
+.tabs,.chips{display:flex;gap:6px;flex-wrap:wrap}.chips{margin-top:8px}
+button{font:inherit;cursor:pointer;border:1px solid var(--bd);background:var(--card);color:var(--fg);border-radius:8px;padding:6px 12px}
+button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.chips button{padding:3px 10px;font-size:.85rem}.chips button.on{background:var(--acb);color:var(--ac);border-color:var(--ac)}
+main{max-width:900px;margin:auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px 16px;margin-bottom:14px}
+.card h2{margin:0 0 6px;font-size:1.1rem}.card h2 span{color:var(--ac);font-size:.8rem;display:block;font-weight:600}
+.card ul{margin:0;padding-left:20px}.card li{margin:4px 0}
+code{background:var(--acb);padding:1px 5px;border-radius:4px;font:.88em ui-monospace,Consolas,monospace}
+pre{background:var(--cd);color:var(--cf);padding:12px;border-radius:8px;overflow-x:auto;font:.85rem/1.5 ui-monospace,Consolas,monospace;margin:8px 0}
+.fc{min-height:200px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:1.15rem;cursor:pointer;padding:24px;user-select:none}
+.fc.back{background:var(--acb);border-color:var(--ac)}
+.row{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;margin:8px 0}.mut{color:var(--mut);font-size:.85rem}
+.opt{display:block;width:100%;text-align:left;margin:6px 0}
+.opt.ok{background:var(--okb);border-color:var(--ok);color:var(--ok)}.opt.no{background:var(--nob);border-color:var(--no);color:var(--no)}
+details{margin-top:6px}summary{cursor:pointer;color:var(--ac);font-weight:600}
+.ans{border-left:3px solid var(--ok);padding-left:12px;margin-top:8px}.ans ol{padding-left:20px;margin:6px 0}
+.big{font-size:2rem;font-weight:700;text-align:center}
+</style></head><body>
+<header><h1>Functional Programming in Python</h1><p>Study hub for Lectures 1–8 · notes, flashcards, random tests, code-output practice</p></header>
+<nav><div class="tabs" id="tabs"></div><div class="chips" id="chips"></div></nav>
+<main id="m"></main>
+<script>
+const T=["Intro to FP","Python for FP","Functions & Immutability","Higher-Order Functions","Lambdas & Closures","Recursion","Advanced Recursion & Memoization","Patterns & Data Structures"];
+// [lecture, heading, bullets]
+const N=[
+[1,"What FP is",["Computation as evaluation of <b>mathematical functions</b>; avoids mutable state and side effects.","Functions are <b>first-class citizens</b>: pass them, return them, assign them.","Focus on results, not execution order."]],
+[1,"History",["Lambda calculus – Alonzo Church, 1930s","LISP – John McCarthy, 1958 · ML – 1970s, Cambridge","Erlang – Ericsson, 1986 · Haskell – 1987 (named after Haskell Curry)","Scala – Odersky, 2004 · F# – Don Syme, early 2000s · Clojure – Rich Hickey, 2007 (Lisp on the JVM)"]],
+[1,"Core principles",["<b>Pure functions</b> · <b>Immutability</b> · <b>Higher-order functions</b> · <b>Lazy evaluation</b> · <b>Recursion</b>","Combinators: functions with no free variables, e.g. <code>compose(f,g) = lambda x: f(g(x))</code>","Lambda calculus: theoretical foundation of FP; <code>lambda x: x + 1</code>"]],
+[1,"Benefits, drawbacks, uses",["+ readability, modularity, parallelism, testability, formal reasoning","− steep learning curve; recursion/copying can be slow; integration with imperative libraries","Web (React, Elm) · Data (Spark in Scala, Pandas/PySpark) · AI (Lisp)"]],
+[2,"FP vs Imperative vs OOP",["Imperative = <b>HOW</b> (loops, mutable state). FP = <b>WHAT</b> (functions, recursion, declarative).","OOP bundles data + methods in objects; reuse via <b>inheritance & polymorphism</b>.","FP separates immutable data from functions; reuse via <b>composition & higher-order functions</b>."]],
+[2,"Built-in functional tools",["<code>lambda</code> – anonymous one-expression function","<code>map(f, it)</code> applies f to each element · <code>filter(f, it)</code> keeps items where f is True · <code>reduce(f, it)</code> folds to one value (<code>from functools import reduce</code>)","List comprehension: <code>[x*x for x in nums if x%2==0]</code>"]],
+[2,"Libraries",["<b>functools</b>: reduce, partial, lru_cache","<b>itertools</b>: count (infinite), cycle (repeat forever), chain (join iterables)","operator, toolz/cytoolz, fn.py"]],
+[2,"When to use FP",["Good for: parallel processing, big data transformation, testable/maintainable code.","Cons: recursion overhead, limited stdlib support, integration with imperative libs."]],
+[3,"Pure functions",["Output depends <b>only</b> on inputs; no side effects (no globals, I/O, file writes). Same input → same output.","Procedural functions may change global state; FP functions don’t.","Benefits: predictability, testability, safe parallelism."]],
+[3,"Immutability",["Object state can’t change after creation; “changing” creates a <b>new</b> object.","Immutable in Python: <code>int float complex str tuple bool frozenset</code>","Why: predictability, no thread synchronization, object reuse, easy testing/rollback."]],
+[4,"Higher-order functions",["Take functions as arguments and/or return functions. Benefits: <b>modularity, readability, simplicity</b>.","Classics: <code>map filter reduce sorted</code>. Composition: <code>compose(f,g)(x) = f(g(x))</code>.","Sort by several keys: <code>key=lambda x: (x['age'], x['name'])</code>"]],
+[4,"Decorators, closures, partial, currying",["Decorator: HOF taking a function, returning a wrapper (<code>@name</code>); uses <code>*args, **kwargs</code>. Uses: timing, logging, auth, type checks.","<b>partial</b> fixes some arguments: <code>partial(multiply, 2)</code>","<b>Currying</b>: f(x,y,z) → f(x)(y)(z)","Typing: <code>Callable</code>, <code>Iterable</code>. Concurrency HOFs: <code>asyncio.gather</code>, <code>ThreadPoolExecutor</code>."]],
+[5,"Lambda functions",["<code>lambda args: expression</code> – one expression, auto-returned, no name.","Ideal for short one-off functions in map/filter/sorted; use a real <code>def</code> for complex logic.","Immediately invoked: <code>(lambda x,y: x**y)(6,3)</code> → 216"]],
+[5,"Closures",["Inner function remembers variables of its enclosing scope even after the outer function ends (“parent/child”).","<code>nonlocal</code> lets the inner function rebind an outer variable (counters, ID generators).","Uses: function factories, decorators, private state."]],
+[6,"Recursion basics",["<b>Base case</b> stops recursion; <b>recursive case</b> moves toward it.","+ clean for trees, math functions · − stack limit (~1000 → <code>RecursionError</code>), overhead, hard to debug.","Algorithms: quicksort (divide & conquer, avg O(n log n)), DFS."]],
+[6,"Recursive structures & immutability",["Linked lists, trees (<code>ListNode</code>, <code>TreeNode</code>). Traversals: <b>pre</b> (root-left-right), <b>in</b> (left-root-right; sorted for BST), <b>post</b> (left-right-root).","Use tuples/new nodes instead of mutating → no side effects.","Recursive map/filter/reduce work on linked lists and trees."]],
+[6,"Tail recursion",["Recursive call is the <b>last</b> operation; an accumulator carries the result.","Languages with tail-call optimization reuse the frame. <b>Python does NOT optimize tail calls.</b>"]],
+[7,"Advanced recursion techniques",["Extra parameters/accumulators, tail recursion, memoization, mutual, branching and structural recursion.","Permutations: loop over elements, recurse on the remaining ones."]],
+[7,"Memoization",["Cache results of earlier calls to avoid recomputation (Fibonacci: exponential → linear).","Manual dict cache or <code>@lru_cache(maxsize=None)</code> (unlimited).","Costs: extra memory, still limited by recursion depth."]],
+[8,"Currying, composition, factories",["Currying & partial application fix arguments to create new functions.","Composition builds complex ops from simple ones. Function factories (<code>power_factory(2)</code>) and decorator factories (<code>@repeat(3)</code>)."]],
+[8,"Monads",["Wrap a value in a context and chain operations without unwrapping.","<b>Maybe</b>: Just(value) / Nothing – handles missing values.","<b>Either</b>: Left = error, Right = success; after an error, later maps are skipped."]],
+[8,"Lazy evaluation & generators",["Compute only when needed → memory-efficient, supports infinite sequences.","Generators use <code>yield</code> and keep state between <code>next()</code> calls."]],
+[8,"Immutable data structures",["<b>Pyrsistent</b>: PVector (<code>v</code>), PMap (<code>m</code>), PSet (<code>s</code>) return new versions.","Functional trees: <code>insert</code> returns a new tree. Benefits: thread-safe, undo/history, easy reasoning.","Also covered: creational, structural, behavioral OOP patterns (overview only)."]]
+];
+// [lecture, front, back]
+const C=[
+[1,"What is functional programming?","A paradigm treating computation as evaluation of math functions, avoiding mutable state and side effects."],
+[1,"What does “first-class function” mean?","Functions can be passed as arguments, returned as results, and assigned to variables."],
+[1,"Who created lambda calculus, LISP, Haskell?","Church (1930s) · McCarthy (1958) · Haskell (1987, named for Haskell Curry)."],
+[1,"List the core FP principles.","Pure functions, immutability, higher-order functions, lazy evaluation, recursion."],
+[1,"What is a combinator?","A function with no free variables used to build programs from functions, e.g. compose."],
+[1,"Name FP-friendly languages from the lecture.","Lisp, Haskell, Erlang, Scala, F#, Clojure."],
+[2,"Imperative vs functional focus?","Imperative: HOW (steps, loops, state). Functional: WHAT (functions, recursion, declarative)."],
+[2,"FP vs OOP code reuse?","FP: composition and higher-order functions. OOP: inheritance and polymorphism."],
+[2,"What does map() do?","Applies a function to every element of an iterable and returns an iterator."],
+[2,"What does filter() do?","Keeps elements for which the function returns True."],
+[2,"What does reduce() do?","Cumulatively applies a two-argument function to reduce a sequence to a single value (functools)."],
+[2,"itertools: count, cycle, chain?","count: infinite counter · cycle: repeat forever · chain: iterate several iterables in a row."],
+[3,"Define a pure function.","Output depends only on its inputs and it has no side effects."],
+[3,"Give an example of an impure function.","One that modifies a global variable (<code>global counter; counter += amount</code>) or writes a file."],
+[3,"Which Python types are immutable?","int, float, complex, str, tuple, bool, frozenset."],
+[3,"Why is immutability good for parallelism?","No shared mutable state, so no locks or synchronization needed."],
+[4,"Define a higher-order function.","A function that takes functions as arguments or returns a function."],
+[4,"What is a decorator?","A HOF that takes a function and returns a wrapper adding behavior, applied with @."],
+[4,"What is functools.partial?","Fixes some arguments of a function and returns a new function with fewer parameters."],
+[4,"What is currying?","Turning f(x, y, z) into a chain f(x)(y)(z) of single-argument functions."],
+[4,"What does asyncio.gather do?","Runs several awaitables concurrently and returns their combined results."],
+[5,"Lambda syntax and limit?","<code>lambda args: expression</code> – only ONE expression, returned automatically."],
+[5,"What is a closure?","An inner function that remembers variables from its enclosing function after it has returned."],
+[5,"What does nonlocal do?","Lets an inner function rebind a variable of the enclosing (not global) scope."],
+[6,"Base case vs recursive case?","Base: stops recursion. Recursive: calls itself on a smaller problem."],
+[6,"Default Python recursion limit?","About 1000 calls; exceeding it raises RecursionError (change with sys.setrecursionlimit)."],
+[6,"Order of in-order traversal?","Left subtree → root → right subtree (ascending for a BST)."],
+[6,"What is tail recursion?","The recursive call is the last operation; result is carried in an accumulator. Python does not optimize it."],
+[7,"What is memoization?","Caching results of function calls so repeated arguments are not recomputed."],
+[7,"How to memoize in the stdlib?","<code>@functools.lru_cache(maxsize=None)</code>"],
+[7,"Why is naive Fibonacci slow?","Overlapping subproblems are recomputed exponentially many times."],
+[7,"Drawbacks of memoization/recursion?","Extra memory, harder debugging, recursion depth limit, call overhead."],
+[8,"What is the Maybe monad?","Wraps a value that may be missing: Just(value) or Nothing; map skips Nothing."],
+[8,"What is the Either monad?","Left = error, Right = success; after a Left, later operations are ignored."],
+[8,"What is a generator?","A function using yield that lazily produces values one at a time and keeps state."],
+[8,"What is a function factory?","A function that creates and returns other functions, e.g. power_factory(2)."],
+[8,"What is Pyrsistent?","Library of immutable structures: PVector, PMap, PSet – updates return new objects."]
+];
+// [lecture, question, correct answer FIRST, wrong, wrong, wrong]
+const Q=[
+[1,"Who created LISP (1958)?","John McCarthy","Alonzo Church","Haskell Curry","Rich Hickey"],
+[1,"Which is NOT a core FP principle?","Mutable global state","Pure functions","Immutability","Lazy evaluation"],
+[1,"Which is a Lisp dialect on the JVM?","Clojure","Erlang","Haskell","F#"],
+[2,"FP describes…","WHAT should be computed","HOW step by step","Only loops","Class hierarchies"],
+[2,"Which reduces a sequence to one value?","reduce","map","filter","sorted"],
+[2,"Which module has lru_cache and partial?","functools","itertools","operator","toolz"],
+[2,"itertools.cycle does…","Repeats an iterable forever","Counts up forever","Chains iterables","Caches results"],
+[2,"OOP reuse is mainly via…","Inheritance and polymorphism","Function composition","Immutability","Lazy evaluation"],
+[3,"A pure function…","Gives same output for same input, no side effects","May change globals","Writes to files","Depends on time"],
+[3,"Which is immutable in Python?","tuple","list","dict","set"],
+[3,"Immutability helps parallelism because…","No shared state needs synchronizing","It uses more CPUs","It disables threads","It speeds up loops"],
+[3,"Which makes a function impure?","Modifying a global variable","Returning a tuple","Using a lambda","Calling str.upper()"],
+[4,"A higher-order function…","Takes or returns functions","Has no arguments","Is always recursive","Only works on ints"],
+[4,"functools.partial…","Fixes some arguments, returns a new function","Caches results","Sorts lists","Starts threads"],
+[4,"Currying turns f(x,y,z) into…","f(x)(y)(z)","f(z,y,x)","A loop","f(x,y)(z) only"],
+[4,"A decorator is…","A HOF returning a wrapped function","A loop construct","A data type","A module"],
+[5,"A lambda body may contain…","One expression","Several statements","A for loop","An import"],
+[5,"Keyword to modify an enclosing variable in a closure?","nonlocal","global","static","outer"],
+[5,"A closure is…","An inner function remembering outer variables","A function with no parameters","A recursive call","A class method"],
+[6,"Every recursive function needs…","A base case","A global variable","A loop","A lambda"],
+[6,"Default Python recursion limit is about…","1000","100","10000","Unlimited"],
+[6,"Does Python optimize tail calls?","No","Yes","Only in lambdas","Only with lru_cache"],
+[6,"In-order traversal of a BST gives…","Ascending order","Descending order","Level order","Random order"],
+[7,"Memoization means…","Caching results of previous calls","Converting to a loop","Parallelizing calls","Removing base cases"],
+[7,"lru_cache(maxsize=None) means…","Unlimited cache","No caching","Size 0","Size 128"],
+[7,"Naive Fibonacci is slow because…","Overlapping subproblems are recomputed","It has no base case","It uses lists","Python is slow"],
+[8,"The Maybe monad handles…","Missing values","Sorting","Threads","File I/O"],
+[8,"In Either…","Left = error, Right = success","Left = success","Both are errors","Both are successes"],
+[8,"Which keyword makes a generator?","yield","return","await","lambda"],
+[8,"Pyrsistent PVector is…","An immutable list","A mutable dict","A frozen set","A tuple subclass"]
+];
+// [lecture, code, output, steps]
+const K=[
+[2,`numbers = [1,2,3,4,5,6,7,8,9,10]
+f = filter(lambda x: x % 2 == 0, numbers)
+m = map(lambda x: x * x, f)
+print(list(m))`,"[4, 16, 36, 64, 100]",["filter keeps even numbers: 2, 4, 6, 8, 10.","map squares each: 4, 16, 36, 64, 100.","list() forces the lazy iterators and prints the result."]],
+[2,`from functools import reduce
+data = [1, 2, 3, 4, 5]
+print(reduce(lambda x, y: x * 10 + y, data))`,"12345",["x=1, y=2 → 1*10+2 = 12","x=12, y=3 → 123","x=123, y=4 → 1234","x=1234, y=5 → 12345"]],
+[2,`def f(n):
+    if n == 0:
+        return 0
+    return n + f(n - 1)
+print(f(5))`,"15",["f(5)=5+f(4) → 5+4+f(3) → … → 5+4+3+2+1+f(0).","Base case f(0)=0, so the stack unwinds: 0+1+2+3+4+5 = 15."]],
+[2,`from itertools import cycle
+count = 0
+for item in cycle('ABCD'):
+    if count > 7:
+        break
+    print(item, end=' ')
+    count += 1`,"A B C D A B C D",["cycle repeats A,B,C,D forever.","count goes 0…7 (8 iterations) printing a letter each time.","At count = 8 the condition count > 7 is true → break."]],
+[3,`counter = 0
+def inc(a):
+    global counter
+    counter += a
+    return counter
+print(inc(5))
+print(inc(3))`,"5\n8",["Impure: it changes global state.","Call 1: counter = 0+5 = 5 → prints 5.","Call 2: counter remembers 5 → 5+3 = 8. Same style of call, different results."]],
+[3,`def compose(f, g):
+    return lambda x: f(g(x))
+mul2 = lambda x: x * 2
+add10 = lambda x: x + 10
+print(compose(add10, mul2)(5))`,"20",["compose(add10, mul2) = x → add10(mul2(x)).","Inner first: mul2(5) = 10.","Then add10(10) = 20."]],
+[3,`scores = [("Arman",88),("Batyr",75),("Arman",92),("Batyr",89)]
+agg = {}
+for s, v in scores:
+    agg.setdefault(s, []).append(v)
+print({s: sum(v)/len(v) for s, v in agg.items()})`,"{'Arman': 90.0, 'Batyr': 82.0}",["Group scores: Arman [88, 92], Batyr [75, 89].","Averages: (88+92)/2 = 90.0 and (75+89)/2 = 82.0.","Division with / returns floats, hence 90.0 and 82.0."]],
+[4,`def curry_add(x):
+    def add_y(y):
+        def add_z(z):
+            return x + y + z
+        return add_z
+    return add_y
+print(curry_add(2)(3)(5))`,"10",["curry_add(2) returns add_y with x=2 remembered (closure).","add_y(3) returns add_z with x=2, y=3.","add_z(5) computes 2+3+5 = 10."]],
+[4,`def repeat_operation(n, func, arg):
+    result = arg
+    for _ in range(n):
+        result = func(result)
+    return result
+print(repeat_operation(4, lambda x: x + 1, 5))`,"9",["Start result = 5.","Four iterations add 1: 6, 7, 8, 9.","Returns 9."]],
+[4,`users = [("Daryn",50),("Arman",25),("Daryn",30)]
+print(sorted(users, key=lambda u: (u[1], u[0])))`,"[('Arman', 25), ('Daryn', 30), ('Daryn', 50)]",["The key builds a tuple (age, name) for each item.","Tuples compare by age first (25 < 30 < 50), names only break ties.","sorted returns a new list; the original is untouched."]],
+[5,`def gen(start=0):
+    cur = start
+    def nxt():
+        nonlocal cur
+        r = cur
+        cur += 1
+        return r
+    return nxt
+u = gen(1)
+print(u(), u(), u())`,"1 2 3",["gen(1) sets cur = 1 and returns nxt (a closure over cur).","Call 1: r=1, cur becomes 2 → 1. Call 2: r=2, cur=3 → 2. Call 3: r=3 → 3.","nonlocal makes cur persist between calls."]],
+[6,`def s(n, acc=0):
+    if n == 0:
+        return acc
+    return s(n - 1, acc + n)
+print(s(3))`,"6",["s(3,0) → s(2,3) → s(1,5) → s(0,6).","Base case n == 0 returns acc = 6.","Tail recursive: nothing is left to do after the call (but Python still grows the stack)."]],
+[7,`def count_digits(n, acc=0):
+    if n == 0:
+        return acc
+    return count_digits(n // 10, acc + 1)
+print(count_digits(123456))`,"6",["n // 10 removes the last digit each call: 123456 → 12345 → … → 1 → 0.","acc increases by 1 for each removed digit: 6 calls.","At n = 0 returns acc = 6."]],
+[7,`def perms(el, cur=[]):
+    if not el:
+        print(cur)
+    else:
+        for i in range(len(el)):
+            perms(el[:i] + el[i+1:], cur + [el[i]])
+perms([1, 2])`,"[1, 2]\n[2, 1]",["i=0: pick 1, remaining [2] → pick 2 → remaining [] → print [1, 2].","i=1: pick 2, remaining [1] → pick 1 → print [2, 1].","New lists are created each time (cur + [...]), so no shared state."]],
+[8,`def repeat(times):
+    def deco(func):
+        def wrapper(*a, **k):
+            for _ in range(times):
+                r = func(*a, **k)
+            return r
+        return wrapper
+    return deco
+@repeat(3)
+def hi(name):
+    print(f"Hello, {name}!")
+hi("World")`,"Hello, World!\nHello, World!\nHello, World!",["@repeat(3) first calls repeat(3), giving deco; deco(hi) gives wrapper.","hi(\"World\") now runs wrapper, which calls the original hi 3 times.","So the greeting prints three times."]],
+[8,`def inf():
+    n = 0
+    while True:
+        yield n
+        n += 1
+g = inf()
+print(next(g), next(g), next(g))`,"0 1 2",["Calling inf() creates a generator; nothing runs yet (lazy).","Each next() runs to the next yield, pausing with n saved: 0, then 1, then 2.","The infinite loop never runs away because values are produced on demand."]],
+[8,`class Tree:
+    def __init__(s, v, l=None, r=None): s.v, s.l, s.r = v, l, r
+    def insert(s, x):
+        if x < s.v:
+            return Tree(s.v, s.l.insert(x) if s.l else Tree(x), s.r)
+        return Tree(s.v, s.l, s.r.insert(x) if s.r else Tree(x))
+    def inorder(s):
+        return (s.l.inorder() if s.l else []) + [s.v] + (s.r.inorder() if s.r else [])
+t = Tree(10)
+t = t.insert(5).insert(15).insert(7)
+print(t.inorder())`,"[5, 7, 10, 15]",["Each insert returns a NEW tree (immutable style); 5 goes left, 15 right, 7 goes left then right of 5.","In-order = left, root, right: [5, 7] + [10] + [15].","Sorted ascending, as expected for a BST."]]
+];
+
+const $=s=>document.querySelector(s);
+const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const sh=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+let L=0,tab='notes',deck=[],di=0,flip=false,qs=[],qi=0,score=0,done=false,kd=[];
+const F=a=>L?a.filter(x=>x[0]===L):a;
+const TABS={notes:"Notes",cards:"Flashcards",quiz:"Random test",code:"Code output"};
+
+function nav(){
+  $('#tabs').innerHTML=Object.entries(TABS).map(([k,v])=>`<button class="${k===tab?'on':''}" onclick="go('${k}')">${v}</button>`).join('');
+  $('#chips').innerHTML=['All',...T.map((_,i)=>'L'+(i+1))].map((v,i)=>`<button class="${i===L?'on':''}" title="${i?T[i-1]:'All lectures'}" onclick="lec(${i})">${v}</button>`).join('');
+}
+function go(t){tab=t;init()}
+function lec(i){L=i;init()}
+function init(){
+  if(tab==='cards'){deck=sh(F(C));di=0;flip=false}
+  if(tab==='quiz'){newTest()}
+  if(tab==='code'){kd=F(K)}
+  nav();draw();
+}
+function draw(){
+  const m=$('#m');
+  if(tab==='notes'){
+    const n=F(N);let last=0,h='';
+    n.forEach(([l,t,b])=>{h+=`<div class="card"><h2><span>Lecture ${l} · ${T[l-1]}</span>${t}</h2><ul>${b.map(x=>`<li>${x}</li>`).join('')}</ul></div>`});
+    m.innerHTML=h;
+  }else if(tab==='cards'){
+    if(!deck.length){m.innerHTML='<p>No cards.</p>';return}
+    const c=deck[di];
+    m.innerHTML=`<p class="mut" style="text-align:center">Card ${di+1} of ${deck.length} · Lecture ${c[0]} · tap card to flip</p>
+    <div class="card fc ${flip?'back':''}" onclick="flip=!flip;draw()">${flip?c[2]:c[1]}</div>
+    <div class="row"><button onclick="step(-1)">← Prev</button><button onclick="step(1)">Next →</button><button onclick="init()">Shuffle</button></div>`;
+  }else if(tab==='quiz'){
+    if(!qs.length){m.innerHTML='<p>No questions.</p>';return}
+    if(done){m.innerHTML=`<div class="card"><div class="big">${score} / ${qs.length}</div><p style="text-align:center">${score===qs.length?'Perfect!':score>=qs.length*.7?'Good work – review the misses.':'Keep practising – try the notes and flashcards.'}</p><div class="row"><button class="on" onclick="init()">New random test</button></div></div>`;return}
+    const q=qs[qi];
+    m.innerHTML=`<p class="mut">Question ${qi+1} of ${qs.length} · Lecture ${q.l} · Score ${score}</p><div class="card"><h2>${esc(q.q)}</h2>${q.o.map((o,i)=>`<button class="opt ${q.a!=null?(i===q.c?'ok':i===q.a?'no':''):''}" ${q.a!=null?'disabled':''} onclick="pick(${i})">${esc(o)}</button>`).join('')}</div>${q.a!=null?`<div class="row"><button class="on" onclick="nextQ()">${qi+1<qs.length?'Next':'See score'}</button></div>`:''}`;
+  }else{
+    m.innerHTML=`<div class="row"><button onclick="kd=sh(F(K));draw()">Shuffle order</button><span class="mut">Predict the output, then reveal the step-by-step trace.</span></div>`+kd.map(k=>`<div class="card"><span class="mut">Lecture ${k[0]} · ${T[k[0]-1]}</span><h2>What will be the output?</h2><pre>${esc(k[1])}</pre><details><summary>Reveal answer</summary><div class="ans"><b>Output:</b><pre>${esc(k[2])}</pre><b>How it works:</b><ol>${k[3].map(s=>`<li>${esc(s)}</li>`).join('')}</ol></div></details></div>`).join('');
+  }
+}
+function step(d){di=(di+d+deck.length)%deck.length;flip=false;draw()}
+function newTest(){
+  qs=sh(F(Q)).slice(0,10).map(r=>{const o=sh(r.slice(2).map((t,i)=>[t,i===0]));return{l:r[0],q:r[1],o:o.map(x=>x[0]),c:o.findIndex(x=>x[1]),a:null}});
+  qi=0;score=0;done=false;
+}
+function pick(i){const q=qs[qi];if(q.a!=null)return;q.a=i;if(i===q.c)score++;draw()}
+function nextQ(){if(qi+1<qs.length)qi++;else done=true;draw()}
+init();
+</script></body></html>
